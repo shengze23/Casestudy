@@ -1,0 +1,31 @@
+load COVIDbyCounty.mat;
+
+
+k=5;
+useLinearTransformation=false; 
+if useLinearTransformation
+    A = eye(size(CNTY_COVID, 2));
+    data = CNTY_COVID * A;
+else
+    data=CNTY_COVID;
+end
+%figure;
+%scatter3(data(:,1),data(:,2),data(:,3),10, 'filled');
+%figure;
+%scatter3(data(:,4),data(:,5),data(:,6),10, 'filled');
+%figure;
+%scatter3(data(:,7),data(:,8),data(:,9),10, 'filled');
+for i=1:154
+    figure;
+    scatter3(data(:,i),data(:,i+1),data(:,i+2),10, 'filled');
+end
+
+% sort by division
+%cntycovid: average number of day a coundy got covid.
+
+
+% normalized county covid
+%normalized_CNTY_COVID = zscore(CNTY_COVID);
+%toTable_normalized_CNTY_COVID=table(normalized_CNTY_COVID);
+%combined=[division,toTable_normalized_CNTY_COVID];
+%[idx, C] = kmeans(combined, 9);
