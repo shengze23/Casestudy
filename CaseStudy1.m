@@ -1,31 +1,22 @@
 load COVIDbyCounty.mat;
 
+% Split data into training and test sets
+% this randomly select 80% of the rows of CNTY_COVID and CNTY_CENSUS for 
+% the training set, and uses the remaining 20% for the test set
+numCounties = size(CNTY_COVID,1); % record noumber of counties
+numTrain = round(0.8*numCounties); % number of counties for the training group
 
-k=5;
-useLinearTransformation=false; 
-if useLinearTransformation
-    A = eye(size(CNTY_COVID, 2));
-    data = CNTY_COVID * A;
-else
-    data=CNTY_COVID;
-end
-%figure;
-%scatter3(data(:,1),data(:,2),data(:,3),10, 'filled');
-%figure;
-%scatter3(data(:,4),data(:,5),data(:,6),10, 'filled');
-%figure;
-%scatter3(data(:,7),data(:,8),data(:,9),10, 'filled');
-for i=1:154
-    figure;
-    scatter3(data(:,i),data(:,i+1),data(:,i+2),10, 'filled');
-end
+trainIdx = randperm(numCounties,numTrain); % 在numCounties中随机选择numTrain个，成为trainIndex
+testIdx = setdiff(1:numCounties,trainIdx); % 1-255个countie中其中没有在trainIdx中出现过的将会被存储在testIdx中
 
-% sort by division
-%cntycovid: average number of day a coundy got covid.
+trainData = CNTY_COVID(trainIdx,:);
+testData = CNTY_COVID(testIdx,:);
+
+trainCensus = CNTY_CENSUS(trainIdx,:); 
+testCensus = CNTY_CENSUS(testIdx,:);
+
+% Cluster training data 
+k = 9; % number of clusters
+[centroids, idx] = kmeans(testData,k);
 
 
-% normalized county covid
-%normalized_CNTY_COVID = zscore(CNTY_COVID);
-%toTable_normalized_CNTY_COVID=table(normalized_CNTY_COVID);
-%combined=[division,toTable_normalized_CNTY_COVID];
-%[idx, C] = kmeans(combined, 9);
