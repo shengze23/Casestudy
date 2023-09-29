@@ -23,7 +23,7 @@ train_Data_Census=[trainCensus,table(trainData)];
 
 % Plot test data points  
 figure;
-scatter(dates,testData,'filled');
+plot(dates,testData,'LineWidth', 1.5);
 
 % Add labels
 xlabel('Date'); 
@@ -32,6 +32,18 @@ title('Test data points before clustering')
 
 
 % Cluster test data 
-k = 9; % number of clusters
+k = 5; % number of clusters
 [idx, C] = kmeans(testData,k);
 
+% 不确定
+figure;
+hold on;
+for i = 1:k
+    cluster_points = testData(idx == i, :);
+    scatter(dates(idx == i), cluster_points, 'filled', 'DisplayName', ['Cluster ' num2str(i)]);
+end
+
+% Plot centroids
+scatter(dates(1), C(:, 1), 100, 'k', 'filled', 'DisplayName', 'Centroid 1');
+scatter(dates(1), C(:, 2), 100, 'k', 'filled', 'DisplayName', 'Centroid 2');
+hold off;
