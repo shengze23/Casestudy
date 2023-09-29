@@ -6,8 +6,10 @@ load COVIDbyCounty.mat;
 numCounties = size(CNTY_COVID,1); % record noumber of counties
 numTrain = round(0.8*numCounties); % number of counties for the training group
 
-trainIdx = randperm(numCounties,numTrain); % 在numCounties中随机选择numTrain个，成为trainIndex
-testIdx = setdiff(1:numCounties,trainIdx); % 1-255个countie中其中没有在trainIdx中出现过的将会被存储在testIdx中
+trainIdx = randperm(numCounties,numTrain); % 在numCounties中随机选择numTrain
+% 个，成为trainIndex
+testIdx = setdiff(1:numCounties,trainIdx); % 1-255个countie中其中没有在
+% trainIdx中出现过的将会被存储在testIdx中
 
 trainData = CNTY_COVID(trainIdx,:);
 testData = CNTY_COVID(testIdx,:);
@@ -15,8 +17,21 @@ testData = CNTY_COVID(testIdx,:);
 trainCensus = CNTY_CENSUS(trainIdx,:); 
 testCensus = CNTY_CENSUS(testIdx,:);
 
-% Cluster training data 
-k = 9; % number of clusters
-[centroids, idx] = kmeans(testData,k);
+test_Data_Census=[testCensus, table(testData)];
+train_Data_Census=[trainCensus,table(trainData)];
 
+
+% Plot test data points  
+figure;
+scatter(dates,testData,'filled');
+
+% Add labels
+xlabel('Date'); 
+ylabel('COVID Cases');
+title('Test data points before clustering') 
+
+
+% Cluster test data 
+k = 9; % number of clusters
+[idx, C] = kmeans(testData,k);
 
