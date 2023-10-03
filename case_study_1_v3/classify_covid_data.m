@@ -9,3 +9,12 @@ for i = 1:numTest
 end
 
 %% 
+%angle
+
+testing_labels_angle = zeros(numTest,1);
+
+for i  = 1:numTest
+    [r_angle,c_angle] = min(angle_table(i,:));
+    testing_labels_angle(i,:) = c_angle;
+end
+%% 

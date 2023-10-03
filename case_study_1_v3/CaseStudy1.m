@@ -1,6 +1,5 @@
 close all;
 load COVIDbyCounty.mat;
-rng default;
 %% 
 % Split data into training and test sets
 % this randomly select 80% of the rows of CNTY_COVID and CNTY_CENSUS for 
@@ -40,17 +39,15 @@ title('Test data points before clustering')
 % Cluster test data 
 k = 18; % number of clusters
 [idx, C] = kmeans(trainData,k,'Replicates',200);
-%kmeans based on angles
-[idx_angle,C_angle] = kmeans(trainData,k,'Distance','cosine','Replicates',200);
+
 %% 
 
+%% 
 
 %getting the accuracy of the k number we use
 
 %creating an array to store which cluster refer to each division 
 cluster_labels  = zeros(k,2);
-
-cluster_labels_angle = zeros(k,2);
 
 %find the most common division in a cluster first, then find the number of
 %this division in this cluster to calculate the percentage of this
@@ -71,27 +68,6 @@ end
 
 
 %% 
-%angle
-for i = 1:k
-    most_common_divnum_i_angle = mode(trainCensus.DIVISION(idx_angle==i));
-    count_mostdivnum_i_angle = sum(trainCensus.DIVISION(idx_angle==i) == most_common_divnum_i);
-    percentage_most_i_angle = (count_mostdivnum_i/numel(trainCensus.DIVISION(idx_angle==i)))*100;
-    fprintf('accuracy is %d.\n',percentage_most_i);
-    %finding what division each cluster represent
-    disp(trainCensus.DIVNAME(most_common_divnum_i_angle,:));
-    disp(trainCensus.DIVISION(most_common_divnum_i_angle,:));
-    fprintf('~~~~~~~~~~~~~~~~~~~~~~~~~~\n');
-    %assigning labels to training_labels
-    cluster_labels_angle(i,1) = i;
-    cluster_labels_angle(i,2) = most_common_divnum_i_angle;
-end
-
-
-
-
-
-
-
 %TESTING DATA VALIDATION
 
 norm_table = [];
@@ -106,17 +82,34 @@ for i = 1:numTest
     norm_table_row = [];
 end
 
-%Testing Data Validation based on angles
+%% 
 
-angle_table = [];
-angle_table_row = [];
+testing_labels = zeros(numTest,1);
 
 for i = 1:numTest
-    for j = 1:k
-        angle_j = acos(dot(testData(i,:),C_angle(j,:))/(norm(testData(i,:))*norm(C_angle(j,:))));
-        angle_table_row = [angle_table_row, angle_j];
-    end
-    angle_table = [angle_table; angle_table_row];
-    angle_table_row = [];
+    [r,c] = min(norm_table(i,:));
+    testing_labels(i,:) = c; 
 end
+
+%% 
+%testing accuracy
+
+score = 0;
+
+testing_labels_withDivnum = [testing_labels,testCensus.DIVISION];
+
+for i = 1:numTest
+    if testing_labels_withDivnum(i,2) == cluster_labels(testing_labels_withDivnum(i,1),2)
+        score = score + 1;
+    end
+end
+
+accuracy = (score/length(testData(:,1)))*100;
+
+disp(accuracy);
+%%
+
+%plotting
+
+
 
